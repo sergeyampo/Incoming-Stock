@@ -1,6 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <Windows.h>
 #include "IncomingStock.h"
 #include "CorrectInput.h"
 #include "IOStock.h"
@@ -35,7 +36,8 @@ int main(){
 	do{
 	char choice = ChooseFirstAction();
 	
-	if(ChooseFirstAction() == '1'){
+	if(choice == '1'){
+	  cout << "Enter the name of the file: ";
 	  string filename = CorrectInput::EnterSym();
 	  try{
 	    stock = IncomingStock(filename);
@@ -52,26 +54,33 @@ int main(){
     }
 
     else if(choice == '3'){
+		cout << "Enter the name of the file: ";
     	string filename = CorrectInput::EnterSym();
     	ofstream fout(filename.c_str());
 
     	stock.Write(fout);
     	cout << "The data was successfully written to the file!";
+		system("pause");
     }
 
     else if(choice == '4'){
+		cout << "Enter the name of the good: ";
     	string name = CorrectInput::EnterSym();
     	if(auto found = stock.StockFindGoodByName(name); found != stock.end()){
     	  streamsize prec = cout.precision();
     	  cout << "Found element: " << found->first.name << " " << setprecision(3) << found->first.price << streamsize(prec) << "\n";
+		  system("pause");
     	}
     	else{
     		cout << "Nothing was found!\n";
+			system("pause");
     	}
     }
 
-    else if(choice == '5')
-    	stock.Write(cout);
+	else if (choice == '5') {
+		stock.Write(cout);
+		system("pause");
+	}
 
     else
       is_exit = true;    

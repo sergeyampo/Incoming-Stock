@@ -7,7 +7,7 @@ namespace IOStock{
 
 Invoice ConstructInvoice(std::istream&, std::ostream&);
 char InvoiceChooseAction();
-Good ConstructGood(std::istream&, std::ostream&);
+std::pair<Good, uint32_t> ConstructGood(std::istream&, std::ostream&);
 
 };
 

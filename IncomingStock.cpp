@@ -61,6 +61,7 @@ std::istream& IncomingStock::Read(std::istream& in){
    	return in;
 }
 
+
 ///Reads `sz` elements of pairs to the `list` container.
 std::istream& IncomingStock::ReadToListOfGoods(istream& in, IncomingStock::list_of_cnt_goods& list, const IncomingStock::list_of_cnt_goods::size_type& sz){
 	for (auto i = decltype(sz){1}; i <= sz; ++i) {
@@ -105,7 +106,7 @@ std::ostream& IncomingStock::Write(std::ostream& out) const{
 	out << invoices.size() << "\n";
 
 	for(auto& inv : invoices){
-		out << inv.id << inv.date << inv.supplier_name << "\n";
+		out << inv.id << " " << inv.date << " " << inv.supplier_name << "\n";
 		WriteListOfGoods(out, inv.goods_list);
 	}
 
@@ -114,7 +115,7 @@ std::ostream& IncomingStock::Write(std::ostream& out) const{
 
 std::ostream& IncomingStock::WriteListOfGoods(ostream& out, const IncomingStock::list_of_cnt_goods& list) const {
 	for (auto& el : list)
-		out << el.first.name << el.second << el.first.price << "\n";
+		out << el.first.name << " " << el.second << " " << el.first.price << "\n";
 
 	return out;
 }

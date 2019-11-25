@@ -61,12 +61,14 @@ char InvoiceChooseAction(){
 /**
 * @brief Constructs Good object interactively via console.
 */
-Good ConstructGood(istream& in, ostream& out){
-	out << "Enter the name and the price of good with space.\n" <<
+pair<Good, uint32_t> ConstructGood(istream& in, ostream& out){
+	out << "Enter the name, the price and the amount of good with space.\n" <<
 	       "Enter: ";
 	Good g;
-	in >> g.name >> g.price;
+	uint32_t amount;
+	in >> g.name >> g.price >> amount;
+	
 
-	return g;
+	return make_pair(g, amount);
 }
 }
