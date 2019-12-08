@@ -4,6 +4,16 @@
 #include "Invoice.h"
 #include <vector>
 #include <iostream>
+#include <algorithm>
+#include "CppConsoleTable.hpp"
+
+/**
+* @brief Enumeration class helps us to distinguish the way of printing the file.
+*/
+enum class PrintView {
+	file = 0,
+	table
+};
 
 class IncomingStock{
   public:
@@ -21,13 +31,16 @@ class IncomingStock{
     ///Manage invoice by adding goods to stock.
     void ManageInvoice(const Invoice&);
     ///Adding passed invoice to the vector of invoices.
-    void AddInvoice(const Invoice& inv) { invoices.emplace_back(inv); };
+	void AddInvoice(const Invoice&);
 
     ///Read from any stream like file or cin
     std::istream& Read(std::istream&);
     ///Write to any strem like file or cout
-    std::ostream& Write(std::ostream&) const;
-    
+    std::ostream& Write(std::ostream&, PrintView) const;
+	///Write to any stream in a table view
+	std::ostream& WriteTable(std::ostream&) const;
+	///Write list of goods to ConsoleTable object
+	samilton::ConsoleTable AddGoodsToTable(samilton::ConsoleTable&, const IncomingStock::list_of_cnt_goods&) const;
     ///Return iterator points to the pair with name concurrence or end(data) if nothing was found.
     list_of_cnt_goods::iterator StockFindGoodByName(const std::string&);
 
@@ -48,5 +61,8 @@ class IncomingStock{
     std::istream& ReadToListOfInvoices(std::istream&, std::vector<Invoice>&, const std::vector<Invoice>::size_type&);
     std::ostream& WriteListOfGoods(std::ostream& out, const list_of_cnt_goods&) const;
 };
+
+std::istream& operator>>(std::istream&, IncomingStock&);
+std::ostream& operator<<(std::ostream&, IncomingStock&);
 
 #endif

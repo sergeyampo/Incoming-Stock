@@ -1,7 +1,6 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <Windows.h>
 #include "IncomingStock.h"
 #include "CorrectInput.h"
 #include "IOStock.h"
@@ -50,7 +49,12 @@ int main(){
 	else if(choice == '2'){
     	Invoice inv = IOStock::ConstructInvoice(cin, cout);
     	stock.ManageInvoice(inv);
-    	stock.AddInvoice(inv);
+		try {
+			stock.AddInvoice(inv);
+		}
+		catch (invalid_argument e) {
+			cout << e.what() << endl;
+		}
     }
 
     else if(choice == '3'){
@@ -58,9 +62,8 @@ int main(){
     	string filename = CorrectInput::EnterSym();
     	ofstream fout(filename.c_str());
 
-    	stock.Write(fout);
-    	cout << "The data was successfully written to the file!";
-		system("pause");
+		fout << stock;
+    	cout << "The data was successfully written to the file!\n";
     }
 
     else if(choice == '4'){
@@ -69,17 +72,14 @@ int main(){
     	if(auto found = stock.StockFindGoodByName(name); found != stock.end()){
     	  streamsize prec = cout.precision();
     	  cout << "Found element: " << found->first.name << " " << setprecision(3) << found->first.price << streamsize(prec) << "\n";
-		  system("pause");
     	}
     	else{
-    		cout << "Nothing was found!\n";
-			system("pause");
+    		cout << "Nothing was found!\n";	
     	}
     }
 
 	else if (choice == '5') {
-		stock.Write(cout);
-		system("pause");
+		stock.Write(cout, PrintView::table);
 	}
 
     else

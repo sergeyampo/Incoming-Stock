@@ -1,11 +1,10 @@
 #include "IncomingStock.h"
 #include "Date.h"
-#include <stdexcept>
 #include <fstream>
 #include <type_traits>
-#include <algorithm>
 
 using namespace std;
+using ConsoleTable = samilton::ConsoleTable;
 
 /**
 * @brief Constructs class from the file with `filename` name.
@@ -98,21 +97,57 @@ std::istream& IncomingStock::ReadToListOfInvoices(istream& in, std::vector<Invoi
 * @brief Print content of current object in Read style.
 * @see IncomingStock::Read()
 */
-std::ostream& IncomingStock::Write(std::ostream& out) const{
-	out << data.size() << "\n";
+std::ostream& IncomingStock::Write(std::ostream& out, PrintView method = PrintView::file) const{
+	if (method == PrintView::table)
+		WriteTable(out);
+	
+	else {
+		out << data.size() << "\n";
 
-	WriteListOfGoods(out, data);
+		WriteListOfGoods(out, data);
 
-	out << invoices.size() << "\n";
+		out << invoices.size() << "\n";
 
-	for(auto& inv : invoices){
-		out << inv.id << " " << inv.date << " " << inv.supplier_name << "\n";
-		WriteListOfGoods(out, inv.goods_list);
+		for (auto& inv : invoices) {
+			out << inv.id << " " << inv.date << " " << inv.supplier_name << "\n";
+			WriteListOfGoods(out, inv.goods_list);
+		}
 	}
 
     return out;
 }
 
+///Function add rows with list of countable goods info in a passed ConsoleTable object.
+ConsoleTable IncomingStock::AddGoodsToTable(ConsoleTable& table_goods, const IncomingStock::list_of_cnt_goods& goods) const {
+	table_goods.addRow(vector<string>{ "Name", "Price", "Amount" });
+	for (const pair<Good, uint32_t>& i : goods) {
+		vector<string> line = { i.first.name, to_string(i.first.price), to_string(i.second) };
+		table_goods.addRow(line);
+	}
+	
+	return table_goods;
+}
+
+///Make the same things as IncomingStock::Write but in a table view way.
+ostream& IncomingStock::WriteTable(ostream& out) const {
+	ConsoleTable table(samilton::Alignment::centre);
+	table[0][1] = "Stock's good:";
+	table = AddGoodsToTable(table, data);
+
+	table.addRow(vector<string>{ "*", "Invoices:", "*" });
+	for (auto& inv : invoices) {
+		table.addRow(vector<string>{ "ID", "Date", "Supplier Name" });
+		table.addRow(vector<string>{to_string(inv.id), static_cast<string>(inv.date), inv.supplier_name});
+		table.addRow(vector<string>{ "*", "Invoices'es goods:", "*" });
+		AddGoodsToTable(table, inv.goods_list);
+	}
+
+	out << table;
+
+	return out;
+}
+
+///Write list of goods to ConsoleTable object
 std::ostream& IncomingStock::WriteListOfGoods(ostream& out, const IncomingStock::list_of_cnt_goods& list) const {
 	for (auto& el : list)
 		out << el.first.name << " " << el.second << " " << el.first.price << "\n";
@@ -124,3 +159,14 @@ std::ostream& IncomingStock::WriteListOfGoods(ostream& out, const IncomingStock:
 std::list<std::pair<Good, uint32_t> >::iterator IncomingStock::StockFindGoodByName(const std::string& name){
 	return find_if(begin(), end(), [&name](const std::pair<Good, uint32_t>& x) { return name == x.first.name; });
 }
+
+///Adding new invoice in a vector if id is unique.
+void IncomingStock::AddInvoice(const Invoice& inv) {
+	if (std::find_if(invoices.begin(), invoices.end(), [inv](const auto& p) { return p.id == inv.id;  }) != invoices.end())
+		throw invalid_argument("The id of the new invoice should be unique!");
+	
+	invoices.emplace_back(inv);
+}
+
+std::istream& operator>>(std::istream& in, IncomingStock& stock) { return stock.Read(in); }
+std::ostream& operator<<(std::ostream& out, IncomingStock& stock) { return stock.Write(out); }
