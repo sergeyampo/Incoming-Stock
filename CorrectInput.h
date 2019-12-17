@@ -11,4 +11,6 @@ namespace CorrectInput {
 	double EnterDoubleNum();
 
 	unsigned int EnterIntNum();
+
+	std::istream& WaitEnter(std::istream&, std::ostream&);
 };

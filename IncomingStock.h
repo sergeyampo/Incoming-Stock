@@ -17,7 +17,7 @@ enum class PrintView {
 
 class IncomingStock{
   public:
-    using list_of_cnt_goods = std::list<std::pair<Good, uint32_t>>;
+    using list_of_cnt_goods = std::list<std::pair<Good, uint32_t> >;
     
 	IncomingStock() = default;
 	IncomingStock(const IncomingStock&) = default;
@@ -43,6 +43,8 @@ class IncomingStock{
 	samilton::ConsoleTable AddGoodsToTable(samilton::ConsoleTable&, const IncomingStock::list_of_cnt_goods&) const;
     ///Return iterator points to the pair with name concurrence or end(data) if nothing was found.
     list_of_cnt_goods::iterator StockFindGoodByName(const std::string&);
+	///Remove element which iterator of list points to, returning the iterator points to the next element.
+	list_of_cnt_goods::iterator Erase(list_of_cnt_goods::iterator to_del) { return data.erase(to_del); }
 
     //Iterators
     list_of_cnt_goods::iterator begin() { return data.begin(); }

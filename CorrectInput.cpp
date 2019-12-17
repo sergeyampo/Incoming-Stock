@@ -63,4 +63,12 @@ namespace CorrectInput {
 				return a;
 		}
 	}
+
+	istream& WaitEnter(istream& in, ostream& out) {
+		out << "Press the enter to continue...";
+		ClearCin(in);
+		in.get();
+
+		return in;
+	}
 };

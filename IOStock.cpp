@@ -26,11 +26,16 @@ Invoice ConstructInvoice(istream& in, ostream& out){
            "add to the stock.\n";
     list<pair<Good, uint32_t> > goods;
 
-    char choice = InvoiceChooseAction();
-    while(choice == '1'){
+	system("CLS");
+	out << "Please add first item to the invoice:\n";
+	goods.emplace_back(ConstructGood(in, out));
+	system("CLS");
+	
+	char choice;
+    do{
       goods.emplace_back(ConstructGood(in, out));
       choice = InvoiceChooseAction();
-    }
+	} while (choice == '1');
     
     return {goods, id, d, supplier_name};
 
@@ -70,5 +75,25 @@ pair<Good, uint32_t> ConstructGood(istream& in, ostream& out){
 	
 
 	return make_pair(g, amount);
+}
+
+/**
+* @brief Makes a dialogue of seeking a good item in a stock, telling if it wasn't found.
+* @param stock - stock of goods.
+* @param name - the name of good to find. 
+* @return iterator - points to the element we found or stock.end() if it's not.
+*/
+std::list<std::pair<Good, uint32_t> >::iterator DialogueFindGood(istream& in, ostream& out, IncomingStock& stock, const string& name) {
+	if (auto found = stock.StockFindGoodByName(name); found != stock.end()) {
+		streamsize prec = out.precision();
+		out << "Found element: " << found->first.name << " " << setprecision(3) << found->first.price << streamsize(prec) << "\n";
+		CorrectInput::WaitEnter(in, out);
+		return found;
+	}
+	else {
+		out << "Nothing was found!\n";
+		CorrectInput::WaitEnter(in, out);
+		return stock.end();
+	}
 }
 }
